@@ -189,34 +189,40 @@ TEST(MEAN_ND_F16, reduce_5d) {
 
 TEST(MEAN_ND_F16, reduce_6d) {
   std::vector<size_t> reduction_axes;
-  for (uint32_t bm1 = 1; bm1 < (uint32_t(1) << 6); bm1++) {
-    const bool reduce_dim1 = (bm1 & (uint32_t(1) << 0)) != 0;
-    const bool reduce_dim2 = (bm1 & (uint32_t(1) << 1)) != 0;
-    const bool reduce_dim3 = (bm1 & (uint32_t(1) << 2)) != 0;
-    const bool reduce_dim4 = (bm1 & (uint32_t(1) << 3)) != 0;
-    const bool reduce_dim5 = (bm1 & (uint32_t(1) << 4)) != 0;
-    const bool reduce_dim6 = (bm1 & (uint32_t(1) << 5)) != 0;
+  //for (uint32_t bm1 = 1; bm1 < (uint32_t(1) << 6); bm1++) {
+    //const bool reduce_dim1 = (bm1 & (uint32_t(1) << 0)) != 0;
+    //const bool reduce_dim2 = (bm1 & (uint32_t(1) << 1)) != 0;
+    //const bool reduce_dim3 = (bm1 & (uint32_t(1) << 2)) != 0;
+    //const bool reduce_dim4 = (bm1 & (uint32_t(1) << 3)) != 0;
+    //const bool reduce_dim5 = (bm1 & (uint32_t(1) << 4)) != 0;
+    //const bool reduce_dim6 = (bm1 & (uint32_t(1) << 5)) != 0;
 
     const std::vector<size_t> input_shape{{kDim1, kDim2, kDim3, kDim4, kDim5, kDim6}};
     reduction_axes.clear();
-    if (reduce_dim1) {
-      reduction_axes.push_back(0);
-    }
-    if (reduce_dim2) {
+    //if (reduce_dim1) {
+    //  std::cout<<" axis 0\n";
+    //  reduction_axes.push_back(0);
+    //}
+    //if (reduce_dim2) {
+    //  std::cout<<" axis 1\n";
       reduction_axes.push_back(1);
-    }
-    if (reduce_dim3) {
+    //}
+    //if (reduce_dim3) {
+    //  std::cout<<" axis 2\n";
       reduction_axes.push_back(2);
-    }
-    if (reduce_dim4) {
+    //}
+    //if (reduce_dim4) {
+    //  std::cout<<" axis 3\n";
       reduction_axes.push_back(3);
-    }
-    if (reduce_dim5) {
+    //}
+    //if (reduce_dim5) {
+    //  std::cout<<" axis 4\n";
       reduction_axes.push_back(4);
-    }
-    if (reduce_dim6) {
-      reduction_axes.push_back(5);
-    }
+    //}
+    //if (reduce_dim6) {
+    //  std::cout<<" axis 5\n";
+      //reduction_axes.push_back(5);
+    //}
 
     size_t num_normalized_input_dims = input_shape.size();
     std::array<size_t, XNN_MAX_TENSOR_DIMS> normalized_input_shape;
@@ -228,14 +234,17 @@ TEST(MEAN_ND_F16, reduce_6d) {
       &num_normalized_reduction_axes, normalized_reduction_axes.data(),
       &num_normalized_input_dims, normalized_input_shape.data());
     if (num_normalized_reduction_axes != 1) {
-      continue;  // unsupported reduction configuration, will fail if we proceed
+    std::cout<<" ******************\n";
+      //continue;  // unsupported reduction configuration, will fail if we proceed
     }
 
+    std::cout<<" RUNNING\n";
     MeanOperatorTester()
       .input_shape(input_shape)
       .reduction_axes(reduction_axes)
       .TestF16();
-  }
+    std::cout<<" ******************\n";
+  //}
 }
 
 TEST(MEAN_ND_F16, reduce_6d_multithreaded) {
@@ -304,10 +313,101 @@ TEST(MEAN_ND_F32, reduce_first_axis) {
     .TestF32();
 }
 
-TEST(MEAN_ND_F32, reduce_last_axis) {
+TEST(MEAN_ND_F16, 1d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim3})
+    .reduction_axes({0})
+    .TestF16();
+}
+
+TEST(MEAN_ND_F16, 2d_contig) {
   MeanOperatorTester()
     .input_shape({kDim1, kDim2})
     .reduction_axes({1})
+    .TestF16();
+}
+
+TEST(MEAN_ND_F16, 3d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3})
+    .reduction_axes({0, 2})
+    .TestF16();
+}
+
+TEST(MEAN_ND_F16, 4d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3, kDim4})
+    .reduction_axes({1, 3})
+    .TestF16();
+}
+
+TEST(MEAN_ND_F16, 5d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3, kDim4, kDim5})
+    .reduction_axes({0, 2, 4})
+    .TestF16();
+}
+
+TEST(MEAN_ND_F16, 6d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3, kDim4, kDim5, kDim6})
+    .reduction_axes({1, 3, 5})
+    .TestF16();
+}
+
+TEST(MEAN_ND_F32, 1d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim3})
+    .reduction_axes({0})
+    .TestF32();
+}
+
+TEST(MEAN_ND_F32, 2d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2})
+    .reduction_axes({1})
+    .TestF32();
+}
+
+TEST(MEAN_ND_F32, 3d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3})
+    .reduction_axes({0, 2})
+    .TestF32();
+}
+
+TEST(MEAN_ND_F32, 4d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3, kDim4})
+    .reduction_axes({1, 3})
+    .TestF32();
+}
+
+TEST(MEAN_ND_F32, 5d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3, kDim4, kDim5})
+    .reduction_axes({0, 2, 4})
+    .TestF32();
+}
+
+TEST(MEAN_ND_F32, 6d_contig) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3, kDim4, kDim5, kDim6})
+    .reduction_axes({1, 3, 5})
+    .TestF32();
+}
+
+TEST(MEAN_ND_F32, reduce_last_axis) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3})
+    .reduction_axes({0,2})
+    .TestF32();
+}
+
+TEST(MEAN_ND_F32, reduce_last_axis2) {
+  MeanOperatorTester()
+    .input_shape({kDim1, kDim2, kDim3})
+    .reduction_axes({0,2})
     .TestF32();
 }
 
@@ -319,10 +419,12 @@ TEST(MEAN_ND_F32, reduce_2d) {
 
     reduction_axes.clear();
     if (reduce_dim1) {
+      std::cout<<" axis 0 " << std::endl;
       reduction_axes.push_back(0);
     }
     if (reduce_dim2) {
       reduction_axes.push_back(1);
+      std::cout<<" axis 1 " << std::endl;
     }
     MeanOperatorTester()
       .input_shape({kDim1, kDim2})
@@ -562,3 +664,5 @@ TEST(MEAN_ND_F32, reduce_6d_multithreaded) {
       .TestF32();
   }
 }
+
+

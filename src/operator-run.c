@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <xnnpack.h>
 #include <xnnpack/allocator.h>
@@ -2019,19 +2020,36 @@ void xnn_compute_univector_contiguous(
 
 void xnn_compute_reduce(
     const struct reduce_context context[restrict XNN_MIN_ELEMENTS(1)],
-    size_t batch_index,
-    size_t batch_range)
+    size_t out_dim0,
+    size_t out_dim1,
+    size_t out_dim2,
+    size_t out1_block_size,
+    size_t out2_block_size)
 {
-  const size_t input_stride = context->input_stride;
-  const size_t output_stride = context->output_stride;
+  const size_t* input_stride = context->input_stride;
+  const size_t* output_stride = context->output_stride;
 
-  const void* input = (const void*) ((uintptr_t) context->input + input_stride * batch_index);
-  void* output = (void*) ((uintptr_t) context->output + output_stride * batch_index);
-  do {
-    context->ukernel(context->scaled_elements, input, output, &context->params);
-    input = (const void*) ((uintptr_t) input + input_stride);
-    output = (void*) ((uintptr_t) output + output_stride);
-  } while (--batch_range != 0);
+  size_t input_offset = input_stride[0] * out_dim0 + input_stride[2] * out_dim1 + input_stride[4] * out_dim2;
+  size_t output_offset = output_stride[0] * out_dim0 + output_stride[1] * out_dim1 + output_stride[2] * out_dim2;
+  int input_shape1 = context->input_shape[1];
+  int input_shape3 = context->input_shape[3];
+
+  void* output = (void*) ((uintptr_t) context->output + output_offset);
+  memset(output, 0, context->element_size * out2_block_size);
+  for (int i = 0; i < input_shape1; ++i) {
+    const void* input = (const void*) ((uintptr_t) context->input + input_offset);
+    for (int j = 0; j < input_shape3; ++j) {
+      const void* s = input;
+      for (int k = 0; k < out2_block_size; ++k) {
+        context->ukernel(context->scaled_elements, s, output, &context->params);
+        s = (const void*) ((uintptr_t) s + input_stride[4]);
+        output = (void*) ((uintptr_t) output + output_stride[2]);
+      }
+      output = (void*) ((uintptr_t) context->output + output_offset);
+      input = (const void*) ((uintptr_t) input + input_stride[3]);
+    }
+    input_offset += input_stride[1];
+  }
 }
 
 void xnn_compute_pad_qd8_params(
