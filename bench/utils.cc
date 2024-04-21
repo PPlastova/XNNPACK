@@ -118,6 +118,7 @@ void DisableDenormals() {
 // Return clockrate in Hz
 uint64_t GetCurrentCpuFrequency() {
 #ifdef __linux__
+#if XNN_ENABLE_CPUINFO
   int freq = 0;
   char cpuinfo_name[512];
   int cpu = sched_getcpu();
@@ -132,6 +133,7 @@ uint64_t GetCurrentCpuFrequency() {
     }
     fclose(f);
   }
+#endif  // XNN_ENABLE_CPUINFO
 #endif  // __linux__
   return 0;
 }

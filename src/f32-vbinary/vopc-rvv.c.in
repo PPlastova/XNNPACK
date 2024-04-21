@@ -15,15 +15,15 @@ $assert ACTIVATION in ["LINEAR", "MINMAX", "RELU"]
 
 
 $OP_FUNC = {
-$  "ADD": "__riscv_vfadd_vf_f32",
-$  "DIV": "__riscv_vfdiv_vf_f32",
-$  "RDIV": "__riscv_vfrdiv_vf_f32",
-$  "MAX": "__riscv_vfmax_vf_f32",
-$  "MIN": "__riscv_vfmin_vf_f32",
-$  "MUL": "__riscv_vfmul_vf_f32",
-$  "SUB": "__riscv_vfsub_vf_f32",
-$  "RSUB": "__riscv_vfrsub_vf_f32",
-$  "SQRDIFF": "__riscv_vfsub_vf_f32",
+$  "ADD": "vfadd_vf_f32",
+$  "DIV": "vfdiv_vf_f32",
+$  "RDIV": "vfrdiv_vf_f32",
+$  "MAX": "vfmax_vf_f32",
+$  "MIN": "vfmin_vf_f32",
+$  "MUL": "vfmul_vf_f32",
+$  "SUB": "vfsub_vf_f32",
+$  "RSUB": "vfrsub_vf_f32",
+$  "SQRDIFF": "vfsub_vf_f32",
 $}[OP]
 $SUFFIX = {"LINEAR": "", "RELU": "_relu", "MINMAX": "_minmax"}[ACTIVATION]
 $PARAMS = {"LINEAR": "xnn_f32_default_params", "RELU": "xnn_f32_relu_params", "MINMAX": "xnn_f32_minmax_params"}[ACTIVATION]
@@ -47,19 +47,19 @@ void xnn_f32_v${OP.lower()}c${SUFFIX}_ukernel__rvv_u${LMUL}v(
   size_t n = batch >> 2;
 
   do {
-    size_t vl = __riscv_vsetvl_e32m${LMUL}(n);
+    size_t vl = vsetvl_e32m${LMUL}(n);
     n -= vl;
-    vfloat32m${LMUL}_t va = __riscv_vle32_v_f32m${LMUL}(input_a, vl);
+    vfloat32m${LMUL}_t va = vle32_v_f32m${LMUL}(input_a, vl);
     input_a += vl;
     vfloat32m${LMUL}_t vacc = ${OP_FUNC}m${LMUL}(va, b, vl);
     $if OP == "SQRDIFF":
-      vacc = __riscv_vfmul_vv_f32m${LMUL}(vacc, vacc, vl);
+      vacc = vfmul_vv_f32m${LMUL}(vacc, vacc, vl);
     $if ACTIVATION == "MINMAX":
-      vacc = __riscv_vfmax_vf_f32m${LMUL}(vacc, output_min, vl);
-      vacc = __riscv_vfmin_vf_f32m${LMUL}(vacc, output_max, vl);
+      vacc = vfmax_vf_f32m${LMUL}(vacc, output_min, vl);
+      vacc = vfmin_vf_f32m${LMUL}(vacc, output_max, vl);
     $elif ACTIVATION == "RELU":
-      vacc = __riscv_vfmax_vf_f32m${LMUL}(vacc, 0.0f, vl);
-    __riscv_vse32_v_f32m${LMUL}(output, vacc, vl);
+      vacc = vfmax_vf_f32m${LMUL}(vacc, 0.0f, vl);
+    vse32_v_f32m${LMUL}(output, vacc, vl);
     output += vl;
   } while (n > 0);
 }

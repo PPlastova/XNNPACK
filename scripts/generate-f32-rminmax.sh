@@ -23,22 +23,6 @@ tools/xngen src/f32-rminmax/neon.c.in -D BATCH_TILE=12 -D ACCUMULATORS=3 -D OP=M
 tools/xngen src/f32-rminmax/neon.c.in -D BATCH_TILE=16 -D ACCUMULATORS=2 -D OP=MINMAX -o src/f32-rminmax/gen/f32-rminmax-neon-u16-acc2.c &
 tools/xngen src/f32-rminmax/neon.c.in -D BATCH_TILE=16 -D ACCUMULATORS=4 -D OP=MINMAX -o src/f32-rminmax/gen/f32-rminmax-neon-u16-acc4.c &
 
-################################ RISC-V Vector ################################
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=1 -D OP=MAX -o src/f32-rminmax/gen/f32-rmax-rvv-u1v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=2 -D OP=MAX -o src/f32-rminmax/gen/f32-rmax-rvv-u2v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=4 -D OP=MAX -o src/f32-rminmax/gen/f32-rmax-rvv-u4v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=8 -D OP=MAX -o src/f32-rminmax/gen/f32-rmax-rvv-u8v.c &
-
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=1 -D OP=MIN -o src/f32-rminmax/gen/f32-rmin-rvv-u1v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=2 -D OP=MIN -o src/f32-rminmax/gen/f32-rmin-rvv-u2v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=4 -D OP=MIN -o src/f32-rminmax/gen/f32-rmin-rvv-u4v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=8 -D OP=MIN -o src/f32-rminmax/gen/f32-rmin-rvv-u8v.c &
-
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=1 -D OP=MINMAX -o src/f32-rminmax/gen/f32-rminmax-rvv-u1v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=2 -D OP=MINMAX -o src/f32-rminmax/gen/f32-rminmax-rvv-u2v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=4 -D OP=MINMAX -o src/f32-rminmax/gen/f32-rminmax-rvv-u4v.c &
-tools/xngen src/f32-rminmax/rvv.c.in -D LMUL=8 -D OP=MINMAX -o src/f32-rminmax/gen/f32-rminmax-rvv-u8v.c &
-
 ################################### x86 SSE ###################################
 tools/xngen src/f32-rminmax/sse.c.in -D BATCH_TILE=4  -D ACCUMULATORS=1 -D OP=MAX -o src/f32-rminmax/gen/f32-rmax-sse-u4.c &
 tools/xngen src/f32-rminmax/sse.c.in -D BATCH_TILE=8  -D ACCUMULATORS=2 -D OP=MAX -o src/f32-rminmax/gen/f32-rmax-sse-u8-acc2.c &

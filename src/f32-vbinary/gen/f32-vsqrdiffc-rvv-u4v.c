@@ -32,13 +32,13 @@ void xnn_f32_vsqrdiffc_ukernel__rvv_u4v(
   size_t n = batch >> 2;
 
   do {
-    size_t vl = __riscv_vsetvl_e32m4(n);
+    size_t vl = vsetvl_e32m4(n);
     n -= vl;
-    vfloat32m4_t va = __riscv_vle32_v_f32m4(input_a, vl);
+    vfloat32m4_t va = vle32_v_f32m4(input_a, vl);
     input_a += vl;
-    vfloat32m4_t vacc = __riscv_vfsub_vf_f32m4(va, b, vl);
-    vacc = __riscv_vfmul_vv_f32m4(vacc, vacc, vl);
-    __riscv_vse32_v_f32m4(output, vacc, vl);
+    vfloat32m4_t vacc = vfsub_vf_f32m4(va, b, vl);
+    vacc = vfmul_vv_f32m4(vacc, vacc, vl);
+    vse32_v_f32m4(output, vacc, vl);
     output += vl;
   } while (n > 0);
 }

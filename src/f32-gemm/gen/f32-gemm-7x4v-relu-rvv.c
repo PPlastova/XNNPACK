@@ -75,22 +75,22 @@ void xnn_f32_gemm_relu_ukernel_7x4v__rvv(
     c6 = c5;
   }
 
-  const size_t nr = __riscv_vsetvlmax_e32m4();
+  const size_t nr = vsetvlmax_e32m4();
   size_t vl = nr;
   do {
     if XNN_UNLIKELY(nc < nr) {
-      vl = __riscv_vsetvl_e32m4(nc);
+      vl = vsetvl_e32m4(nc);
     }
     nc = nc - vl;
 
-    vfloat32m4_t vacc0 =  __riscv_vle32_v_f32m4(w, vl);
+    vfloat32m4_t vacc0 =  vle32_v_f32m4(w, vl);
     w = w + nr;
-    vfloat32m4_t vacc1 =  __riscv_vmv_v_v_f32m4(vacc0, vl);
-    vfloat32m4_t vacc2 =  __riscv_vmv_v_v_f32m4(vacc0, vl);
-    vfloat32m4_t vacc3 =  __riscv_vmv_v_v_f32m4(vacc0, vl);
-    vfloat32m4_t vacc4 =  __riscv_vmv_v_v_f32m4(vacc0, vl);
-    vfloat32m4_t vacc5 =  __riscv_vmv_v_v_f32m4(vacc0, vl);
-    vfloat32m4_t vacc6 =  __riscv_vmv_v_v_f32m4(vacc0, vl);
+    vfloat32m4_t vacc1 =  vmv_v_v_f32m4(vacc0, vl);
+    vfloat32m4_t vacc2 =  vmv_v_v_f32m4(vacc0, vl);
+    vfloat32m4_t vacc3 =  vmv_v_v_f32m4(vacc0, vl);
+    vfloat32m4_t vacc4 =  vmv_v_v_f32m4(vacc0, vl);
+    vfloat32m4_t vacc5 =  vmv_v_v_f32m4(vacc0, vl);
+    vfloat32m4_t vacc6 =  vmv_v_v_f32m4(vacc0, vl);
 
     size_t k = kc;
     do {
@@ -101,39 +101,39 @@ void xnn_f32_gemm_relu_ukernel_7x4v__rvv(
       const float va4 = *a4++;
       const float va5 = *a5++;
       const float va6 = *a6++;
-      vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl);
+      vfloat32m4_t vb = vle32_v_f32m4(w, vl);
       w = w + nr;
-      vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, va0, vb, vl);
-      vacc1 = __riscv_vfmacc_vf_f32m4(vacc1, va1, vb, vl);
-      vacc2 = __riscv_vfmacc_vf_f32m4(vacc2, va2, vb, vl);
-      vacc3 = __riscv_vfmacc_vf_f32m4(vacc3, va3, vb, vl);
-      vacc4 = __riscv_vfmacc_vf_f32m4(vacc4, va4, vb, vl);
-      vacc5 = __riscv_vfmacc_vf_f32m4(vacc5, va5, vb, vl);
-      vacc6 = __riscv_vfmacc_vf_f32m4(vacc6, va6, vb, vl);
+      vacc0 = vfmacc_vf_f32m4(vacc0, va0, vb, vl);
+      vacc1 = vfmacc_vf_f32m4(vacc1, va1, vb, vl);
+      vacc2 = vfmacc_vf_f32m4(vacc2, va2, vb, vl);
+      vacc3 = vfmacc_vf_f32m4(vacc3, va3, vb, vl);
+      vacc4 = vfmacc_vf_f32m4(vacc4, va4, vb, vl);
+      vacc5 = vfmacc_vf_f32m4(vacc5, va5, vb, vl);
+      vacc6 = vfmacc_vf_f32m4(vacc6, va6, vb, vl);
       k -= sizeof(float);
     } while (k != 0);
     // apply ReLU to results
-    vacc0 = __riscv_vfmax_vf_f32m4(vacc0, vmin, vl);
-    vacc1 = __riscv_vfmax_vf_f32m4(vacc1, vmin, vl);
-    vacc2 = __riscv_vfmax_vf_f32m4(vacc2, vmin, vl);
-    vacc3 = __riscv_vfmax_vf_f32m4(vacc3, vmin, vl);
-    vacc4 = __riscv_vfmax_vf_f32m4(vacc4, vmin, vl);
-    vacc5 = __riscv_vfmax_vf_f32m4(vacc5, vmin, vl);
-    vacc6 = __riscv_vfmax_vf_f32m4(vacc6, vmin, vl);
+    vacc0 = vfmax_vf_f32m4(vacc0, vmin, vl);
+    vacc1 = vfmax_vf_f32m4(vacc1, vmin, vl);
+    vacc2 = vfmax_vf_f32m4(vacc2, vmin, vl);
+    vacc3 = vfmax_vf_f32m4(vacc3, vmin, vl);
+    vacc4 = vfmax_vf_f32m4(vacc4, vmin, vl);
+    vacc5 = vfmax_vf_f32m4(vacc5, vmin, vl);
+    vacc6 = vfmax_vf_f32m4(vacc6, vmin, vl);
     // store 7 x vl results to c
-    __riscv_vse32_v_f32m4(c0, vacc0, vl);
+    vse32_v_f32m4(c0, vacc0, vl);
     c0 = (float*) ((uintptr_t) c0 + cn_stride);
-    __riscv_vse32_v_f32m4(c1, vacc1, vl);
+    vse32_v_f32m4(c1, vacc1, vl);
     c1 = (float*) ((uintptr_t) c1 + cn_stride);
-    __riscv_vse32_v_f32m4(c2, vacc2, vl);
+    vse32_v_f32m4(c2, vacc2, vl);
     c2 = (float*) ((uintptr_t) c2 + cn_stride);
-    __riscv_vse32_v_f32m4(c3, vacc3, vl);
+    vse32_v_f32m4(c3, vacc3, vl);
     c3 = (float*) ((uintptr_t) c3 + cn_stride);
-    __riscv_vse32_v_f32m4(c4, vacc4, vl);
+    vse32_v_f32m4(c4, vacc4, vl);
     c4 = (float*) ((uintptr_t) c4 + cn_stride);
-    __riscv_vse32_v_f32m4(c5, vacc5, vl);
+    vse32_v_f32m4(c5, vacc5, vl);
     c5 = (float*) ((uintptr_t) c5 + cn_stride);
-    __riscv_vse32_v_f32m4(c6, vacc6, vl);
+    vse32_v_f32m4(c6, vacc6, vl);
     c6 = (float*) ((uintptr_t) c6 + cn_stride);
     a0 = (const float*) ((uintptr_t) a0 - kc);
     a1 = (const float*) ((uintptr_t) a1 - kc);

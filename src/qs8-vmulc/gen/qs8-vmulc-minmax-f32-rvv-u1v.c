@@ -34,22 +34,22 @@ void xnn_qs8_vmulc_minmax_fp32_ukernel__rvv_u1v(
   const int32_t vb = (int32_t) *input_b - params->fp32_scalar.b_zero_point;
 
   do {
-    const size_t n = __riscv_vsetvl_e8m1(batch);
+    const size_t n = vsetvl_e8m1(batch);
 
-    vint8m1_t in_a_i8v = __riscv_vle8_v_i8m1(input_a, n); input_a += n;
-    vint16m2_t a_i16v = __riscv_vwsub_vx_i16m2(in_a_i8v, a_zero_point, n);
+    vint8m1_t in_a_i8v = vle8_v_i8m1(input_a, n); input_a += n;
+    vint16m2_t a_i16v = vwsub_vx_i16m2(in_a_i8v, a_zero_point, n);
 
-    vint32m4_t acc_i32v = __riscv_vwmul_vx_i32m4(a_i16v, vb, n);
-    vfloat32m4_t acc_f32v = __riscv_vfcvt_f_x_v_f32m4(acc_i32v, n);
-    acc_f32v = __riscv_vfmul_vf_f32m4(acc_f32v, scale, n);
-    acc_f32v = __riscv_vfmin_vf_f32m4(__riscv_vfmax_vf_f32m4(acc_f32v, output_min_less_zero_point, n), output_max_less_zero_point, n);
-    acc_f32v = __riscv_vfadd_vf_f32m4(acc_f32v, magic_bias, n);
+    vint32m4_t acc_i32v = vwmul_vx_i32m4(a_i16v, vb, n);
+    vfloat32m4_t acc_f32v = vfcvt_f_x_v_f32m4(acc_i32v, n);
+    acc_f32v = vfmul_vf_f32m4(acc_f32v, scale, n);
+    acc_f32v = vfmin_vf_f32m4(vfmax_vf_f32m4(acc_f32v, output_min_less_zero_point, n), output_max_less_zero_point, n);
+    acc_f32v = vfadd_vf_f32m4(acc_f32v, magic_bias, n);
 
-    vint32m4_t out_i32v = __riscv_vfcvt_x_f_v_i32m4(acc_f32v, n);
-    out_i32v = __riscv_vsub_vx_i32m4(out_i32v, magic_bias_less_output_zero_point, n);
-    vint16m2_t out_i16v = __riscv_vncvt_x_x_w_i16m2(out_i32v, n);
-    vint8m1_t out_i8v = __riscv_vncvt_x_x_w_i8m1(out_i16v, n);
-    __riscv_vse8_v_i8m1(output, out_i8v, n); output += n;
+    vint32m4_t out_i32v = vfcvt_x_f_v_i32m4(acc_f32v, n);
+    out_i32v = vsub_vx_i32m4(out_i32v, magic_bias_less_output_zero_point, n);
+    vint16m2_t out_i16v = vncvt_x_x_w_i16m2(out_i32v, n);
+    vint8m1_t out_i8v = vncvt_x_x_w_i8m1(out_i16v, n);
+    vse8_v_i8m1(output, out_i8v, n); output += n;
 
     batch -= n;
   } while (batch != 0);

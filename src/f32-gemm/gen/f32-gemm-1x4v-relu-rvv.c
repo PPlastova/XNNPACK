@@ -39,29 +39,29 @@ void xnn_f32_gemm_relu_ukernel_1x4v__rvv(
   const float* a0 = a;
   float* c0 = c;
 
-  const size_t nr = __riscv_vsetvlmax_e32m4();
+  const size_t nr = vsetvlmax_e32m4();
   size_t vl = nr;
   do {
     if XNN_UNLIKELY(nc < nr) {
-      vl = __riscv_vsetvl_e32m4(nc);
+      vl = vsetvl_e32m4(nc);
     }
     nc = nc - vl;
 
-    vfloat32m4_t vacc0 =  __riscv_vle32_v_f32m4(w, vl);
+    vfloat32m4_t vacc0 =  vle32_v_f32m4(w, vl);
     w = w + nr;
 
     size_t k = kc;
     do {
       const float va0 = *a0++;
-      vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl);
+      vfloat32m4_t vb = vle32_v_f32m4(w, vl);
       w = w + nr;
-      vacc0 = __riscv_vfmacc_vf_f32m4(vacc0, va0, vb, vl);
+      vacc0 = vfmacc_vf_f32m4(vacc0, va0, vb, vl);
       k -= sizeof(float);
     } while (k != 0);
     // apply ReLU to results
-    vacc0 = __riscv_vfmax_vf_f32m4(vacc0, vmin, vl);
+    vacc0 = vfmax_vf_f32m4(vacc0, vmin, vl);
     // store 1 x vl results to c
-    __riscv_vse32_v_f32m4(c0, vacc0, vl);
+    vse32_v_f32m4(c0, vacc0, vl);
     c0 = (float*) ((uintptr_t) c0 + cn_stride);
     a0 = (const float*) ((uintptr_t) a0 - kc);
   } while (nc != 0);

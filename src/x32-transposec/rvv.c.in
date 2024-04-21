@@ -46,29 +46,29 @@ void xnn_x${SIZE}_transposec_ukernel__${TILE_HEIGHT}x${TILE_WIDTH}_rvv(
 
   do {
     size_t bh = block_height;
-    size_t vl = __riscv_vsetvl_e${SIZE}m${LMUL}(tile_height);
+    size_t vl = vsetvl_e${SIZE}m${LMUL}(tile_height);
     for (; bh >= ${TILE_HEIGHT}; bh -= ${TILE_HEIGHT}) {
       if (block_width >= tile_width) {
-        vuint${SIZE}m${LMUL}x${TILE_WIDTH}_t tuple = __riscv_vlsseg${TILE_WIDTH}e${SIZE}_v_u${SIZE}m${LMUL}x${TILE_WIDTH}(i0, input_stride, vl);
+        vuint${SIZE}m${LMUL}x${TILE_WIDTH}_t tuple = vlsseg${TILE_WIDTH}e${SIZE}_v_u${SIZE}m${LMUL}x${TILE_WIDTH}(i0, input_stride, vl);
 
         $for N in range(TILE_WIDTH):
-          vuint${SIZE}m${LMUL}_t v_d${N} = __riscv_vget_v_u${SIZE}m${LMUL}x${TILE_WIDTH}_u${SIZE}m${LMUL}(tuple, ${N});
-          __riscv_vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
+          vuint${SIZE}m${LMUL}_t v_d${N} = vget_v_u${SIZE}m${LMUL}x${TILE_WIDTH}_u${SIZE}m${LMUL}(tuple, ${N});
+          vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
 
       } else {
         switch (block_width) {
           $for M in reversed(range(2, TILE_WIDTH)):
             case ${M}: {
-              vuint${SIZE}m${LMUL}x${M}_t tuple = __riscv_vlsseg${M}e${SIZE}_v_u${SIZE}m${LMUL}x${M}(i0, input_stride, vl);
+              vuint${SIZE}m${LMUL}x${M}_t tuple = vlsseg${M}e${SIZE}_v_u${SIZE}m${LMUL}x${M}(i0, input_stride, vl);
 
               $for N in range(M):
-                vuint${SIZE}m${LMUL}_t v_d${N} = __riscv_vget_v_u${SIZE}m${LMUL}x${M}_u${SIZE}m${LMUL}(tuple, ${N});
-                __riscv_vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
+                vuint${SIZE}m${LMUL}_t v_d${N} = vget_v_u${SIZE}m${LMUL}x${M}_u${SIZE}m${LMUL}(tuple, ${N});
+                vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
               break;
             }\n
           case 1: {
-            vuint32m${LMUL}_t v_d0 = __riscv_vlse32_v_u32m${LMUL}(i0, input_stride, vl);
-            __riscv_vse32_v_u32m${LMUL}(o0, v_d0, vl);
+            vuint32m${LMUL}_t v_d0 = vlse32_v_u32m${LMUL}(i0, input_stride, vl);
+            vse32_v_u32m${LMUL}(o0, v_d0, vl);
             break;
           }
 
@@ -84,28 +84,28 @@ void xnn_x${SIZE}_transposec_ukernel__${TILE_HEIGHT}x${TILE_WIDTH}_rvv(
 
     if (bh != 0) {
       const uint${SIZE}_t* i = i0;
-      vl = __riscv_vsetvl_e${SIZE}m${LMUL}(bh);
+      vl = vsetvl_e${SIZE}m${LMUL}(bh);
       if (block_width >= tile_width) {
-        vuint${SIZE}m${LMUL}x${TILE_WIDTH}_t tuple = __riscv_vlsseg${TILE_WIDTH}e${SIZE}_v_u${SIZE}m${LMUL}x${TILE_WIDTH}(i, input_stride, vl);
+        vuint${SIZE}m${LMUL}x${TILE_WIDTH}_t tuple = vlsseg${TILE_WIDTH}e${SIZE}_v_u${SIZE}m${LMUL}x${TILE_WIDTH}(i, input_stride, vl);
 
         $for N in range(TILE_WIDTH):
-          vuint${SIZE}m${LMUL}_t v_d${N} = __riscv_vget_v_u${SIZE}m${LMUL}x${TILE_WIDTH}_u${SIZE}m${LMUL}(tuple, ${N});
-          __riscv_vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
+          vuint${SIZE}m${LMUL}_t v_d${N} = vget_v_u${SIZE}m${LMUL}x${TILE_WIDTH}_u${SIZE}m${LMUL}(tuple, ${N});
+          vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
       } else {
         switch(block_width) {
           $for M in reversed(range(2, TILE_WIDTH)):
             case ${M}: {
-              vuint${SIZE}m${LMUL}x${M}_t tuple = __riscv_vlsseg${M}e${SIZE}_v_u${SIZE}m${LMUL}x${M}(i, input_stride, vl);
+              vuint${SIZE}m${LMUL}x${M}_t tuple = vlsseg${M}e${SIZE}_v_u${SIZE}m${LMUL}x${M}(i, input_stride, vl);
 
               $for N in range(0, M):
-                vuint${SIZE}m${LMUL}_t v_d${N} = __riscv_vget_v_u${SIZE}m${LMUL}x${M}_u${SIZE}m${LMUL}(tuple, ${N});
-                __riscv_vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
+                vuint${SIZE}m${LMUL}_t v_d${N} = vget_v_u${SIZE}m${LMUL}x${M}_u${SIZE}m${LMUL}(tuple, ${N});
+                vse${SIZE}_v_u${SIZE}m${LMUL}(o${N}, v_d${N}, vl);
               break;
             }
 
           case 1: {
-            vuint32m${LMUL}_t v_d0 = __riscv_vlse32_v_u32m${LMUL}(i, input_stride, vl);
-            __riscv_vse32_v_u32m${LMUL}(o0, v_d0, vl);
+            vuint32m${LMUL}_t v_d0 = vlse32_v_u32m${LMUL}(i, input_stride, vl);
+            vse32_v_u32m${LMUL}(o0, v_d0, vl);
             break;
           }
 

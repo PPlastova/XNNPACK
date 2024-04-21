@@ -32,27 +32,27 @@ void xnn_f32_r${OP.lower()}_ukernel__rvv_u${LMUL}v(
 
   size_t N = batch >> 2;
   size_t avl;
-  size_t vl = __riscv_vsetvl_e32m${LMUL}(N);
+  size_t vl = vsetvl_e32m${LMUL}(N);
 
-  vfloat32m${LMUL}_t t0 = __riscv_vle32_v_f32m${LMUL}(input, vl);
+  vfloat32m${LMUL}_t t0 = vle32_v_f32m${LMUL}(input, vl);
   input += vl;
   $if MAX_POS == 1:
-    vfloat32m${LMUL}_t t1 = __riscv_vmv_v_v_f32m${LMUL}(t0, vl);
+    vfloat32m${LMUL}_t t1 = vmv_v_v_f32m${LMUL}(t0, vl);
 
   for (avl = N - vl; avl; avl -= vl, input += vl) {
-    vl = __riscv_vsetvl_e32m${LMUL}(avl);
-    vfloat32m${LMUL}_t vec = __riscv_vle32_v_f32m${LMUL}(input, vl);
-    t0 = __riscv_vf${OP_0}_vv_f32m${LMUL}_tu(t0, t0, vec, vl);
+    vl = vsetvl_e32m${LMUL}(avl);
+    vfloat32m${LMUL}_t vec = vle32_v_f32m${LMUL}(input, vl);
+    t0 = vf${OP_0}_vv_f32m${LMUL}_tu(t0, t0, vec, vl);
     $if MAX_POS == 1:
-      t1 = __riscv_vfmax_vv_f32m${LMUL}_tu(t1, t1, vec, vl);
+      t1 = vfmax_vv_f32m${LMUL}_tu(t1, t1, vec, vl);
   }
 
   $if EMIT_MIN:
-    vfloat32m1_t fmin = __riscv_vfmv_s_f_f32m1(INFINITY, 1);
+    vfloat32m1_t fmin = vfmv_s_f_f32m1(INFINITY, 1);
   $if EMIT_MAX:
-    vfloat32m1_t fmax = __riscv_vfmv_s_f_f32m1(-INFINITY, 1);
+    vfloat32m1_t fmax = vfmv_s_f_f32m1(-INFINITY, 1);
   $if EMIT_MIN:
-    output[0] = __riscv_vfmv_f_s_f32m1_f32(__riscv_vfredmin_vs_f32m${LMUL}_f32m1(t0, fmin, N));
+    output[0] = vfmv_f_s_f32m1_f32(vfredmin_vs_f32m${LMUL}_f32m1(t0, fmin, N));
   $if EMIT_MAX:
-    output[${MAX_POS}] = __riscv_vfmv_f_s_f32m1_f32(__riscv_vfredmax_vs_f32m${LMUL}_f32m1(t${MAX_POS}, fmax, N));
+    output[${MAX_POS}] = vfmv_f_s_f32m1_f32(vfredmax_vs_f32m${LMUL}_f32m1(t${MAX_POS}, fmax, N));
 }

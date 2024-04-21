@@ -68,7 +68,7 @@ static inline const struct xnn_dwconv_config* find_dwconv_ukernel(
   if (best_ukernel == NULL) {
     xnn_log_debug("no dwconv ukernel found");
   } else if (best_ukernel->last_tile == 0) {
-    xnn_log_debug("dwconv unipass ukernel of primary tile %"PRIu8" found", best_ukernel->primary_tile);
+    xnn_log_debug("dwconv unipass ukernel found, params: channel_tile %"PRIu8", channel_subtile %"PRIu8", channel_round %"PRIu8", primary_tile %"PRIu8", middle_tile %"PRIu8", last_tile %"PRIu8"", best_ukernel->channel_tile,  best_ukernel->channel_subtile, best_ukernel->channel_round, best_ukernel->primary_tile, best_ukernel->middle_tile, best_ukernel->last_tile);
   } else {
     xnn_log_debug("dwconv multipass ukernel of tiles %"PRIu8", %"PRIu8", %"PRIu8" found",
                   best_ukernel->primary_tile,
@@ -1656,6 +1656,7 @@ enum xnn_status xnn_create_convolution2d_nhwc_f32(
   }
 
   union xnn_f32_minmax_params dwconv_params;
+  xnn_log_debug("Run xnn_create_convolution2d_nhwc_f32");
   const struct xnn_dwconv_config* dwconv_ukernel =
     find_dwconv_ukernel(kernel_height * kernel_width, dwconv_config, XNN_MAX_F32_DWCONV_UKERNELS);
   if XNN_LIKELY(dwconv_ukernel != NULL) {
@@ -1787,6 +1788,7 @@ enum xnn_status xnn_create_fused_convolution2d_nhwc_f32(
   }
 
   union xnn_f32_minmax_params dwconv_params;
+  xnn_log_debug("Run xnn_create_fused_convolution2d_nhwc_f32");
   const struct xnn_dwconv_config* dwconv_ukernel =
     find_dwconv_ukernel(kernel_height * kernel_width, dwconv_config, XNN_MAX_F32_DWCONV_UKERNELS);
   if XNN_LIKELY(dwconv_ukernel != NULL) {

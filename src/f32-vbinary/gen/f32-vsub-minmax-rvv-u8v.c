@@ -33,16 +33,16 @@ void xnn_f32_vsub_minmax_ukernel__rvv_u8v(
   size_t n = batch >> 2;
 
   do {
-    size_t vl = __riscv_vsetvl_e32m8(n);
+    size_t vl = vsetvl_e32m8(n);
     n -= vl;
-    vfloat32m8_t va = __riscv_vle32_v_f32m8(input_a, vl);
+    vfloat32m8_t va = vle32_v_f32m8(input_a, vl);
     input_a += vl;
-    vfloat32m8_t vb = __riscv_vle32_v_f32m8(input_b, vl);
+    vfloat32m8_t vb = vle32_v_f32m8(input_b, vl);
     input_b += vl;
-    vfloat32m8_t vacc = __riscv_vfsub_vv_f32m8(va, vb, vl);
-    vacc = __riscv_vfmax_vf_f32m8(vacc, output_min, vl);
-    vacc = __riscv_vfmin_vf_f32m8(vacc, output_max, vl);
-    __riscv_vse32_v_f32m8(output, vacc, vl);
+    vfloat32m8_t vacc = vfsub_vv_f32m8(va, vb, vl);
+    vacc = vfmax_vf_f32m8(vacc, output_min, vl);
+    vacc = vfmin_vf_f32m8(vacc, output_max, vl);
+    vse32_v_f32m8(output, vacc, vl);
     output += vl;
   } while (n > 0);
 }

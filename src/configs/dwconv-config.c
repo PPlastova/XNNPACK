@@ -20,6 +20,7 @@
 #include <xnnpack/config.h>
 #include <xnnpack/microparams-init.h>
 #include <xnnpack/dwconv.h>
+#include <xnnpack/log.h>
 
 static struct xnn_dwconv_config f16_dwconv_config[XNN_MAX_F16_DWCONV_UKERNELS] = {0};
 static struct xnn_dwconv_config f32_dwconv_config[XNN_MAX_F32_DWCONV_UKERNELS] = {0};
@@ -679,6 +680,8 @@ static void init_f32_dwconv_config(void) {
     f32_dwconv_config[3].channel_subtile = 1;
     f32_dwconv_config[3].channel_round = 1;
     f32_dwconv_config[3].primary_tile = 25;
+
+    xnn_log_debug("Create scalar init_f32_dwconv_config in SCALAR CODE PATH");
   #endif
 }
 

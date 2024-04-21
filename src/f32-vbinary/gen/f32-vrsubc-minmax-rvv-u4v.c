@@ -34,14 +34,14 @@ void xnn_f32_vrsubc_minmax_ukernel__rvv_u4v(
   size_t n = batch >> 2;
 
   do {
-    size_t vl = __riscv_vsetvl_e32m4(n);
+    size_t vl = vsetvl_e32m4(n);
     n -= vl;
-    vfloat32m4_t va = __riscv_vle32_v_f32m4(input_a, vl);
+    vfloat32m4_t va = vle32_v_f32m4(input_a, vl);
     input_a += vl;
-    vfloat32m4_t vacc = __riscv_vfrsub_vf_f32m4(va, b, vl);
-    vacc = __riscv_vfmax_vf_f32m4(vacc, output_min, vl);
-    vacc = __riscv_vfmin_vf_f32m4(vacc, output_max, vl);
-    __riscv_vse32_v_f32m4(output, vacc, vl);
+    vfloat32m4_t vacc = vfrsub_vf_f32m4(va, b, vl);
+    vacc = vfmax_vf_f32m4(vacc, output_min, vl);
+    vacc = vfmin_vf_f32m4(vacc, output_max, vl);
+    vse32_v_f32m4(output, vacc, vl);
     output += vl;
   } while (n > 0);
 }
