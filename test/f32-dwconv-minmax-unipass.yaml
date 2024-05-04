@@ -434,3 +434,10 @@
   init: xnn_init_f32_minmax_scalar_params
 - name: xnn_f32_dwconv_minmax_ukernel_25p2c__scalar_acc2
   init: xnn_init_f32_minmax_scalar_params
+
+# RISCV RVV
+# - name: xnn_f32_dwconv_minmax_ukernel_3p4c__rvv
+#   init: xnn_init_f32_minmax_scalar_params
+
+- name: xnn_f32_dwconv_minmax_ukernel_25p8c__rvv
+  init: xnn_init_f32_minmax_scalar_params

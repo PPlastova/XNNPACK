@@ -40,3 +40,6 @@
 - name: xnn_f32_dwconv_ukernel_25p1c__scalar_acc2
 - name: xnn_f32_dwconv_ukernel_25p2c__scalar
 - name: xnn_f32_dwconv_ukernel_25p2c__scalar_acc2
+#RISCV RVV
+# - name: xnn_f32_dwconv_ukernel_3p4c__rvv
+- name: xnn_f32_dwconv_ukernel_25p8c__rvv
