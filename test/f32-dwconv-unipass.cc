@@ -571,12 +571,23 @@ INSTANTIATE_TEST_SUITE_P(
   //       return info.param.test_name;
   //     });
 
-  INSTANTIATE_TEST_SUITE_P(
-      F32_DWCONV_25P8C__RVV, DWConvTest,
+  // INSTANTIATE_TEST_SUITE_P(
+  //     F32_DWCONV_25P8C__RVV, DWConvTest,
+  //     testing::ValuesIn(CreateTests1(
+  //         /*c_block=*/8, /*adj_c_block=*/8, /*cr=*/8, /*kr=*/25,
+  //         [](DWConvMicrokernelTester& tester) {
+  //           tester.Test(xnn_f32_dwconv_ukernel_25p8c__rvv);
+  //         })),
+  //     [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
+  //       return info.param.test_name;
+  //     });
+
+    INSTANTIATE_TEST_SUITE_P(
+      F32_DWCONV_25P4C__RVV, DWConvTest,
       testing::ValuesIn(CreateTests1(
-          /*c_block=*/8, /*adj_c_block=*/8, /*cr=*/8, /*kr=*/25,
+          /*c_block=*/4, /*adj_c_block=*/4, /*cr=*/4, /*kr=*/25,
           [](DWConvMicrokernelTester& tester) {
-            tester.Test(xnn_f32_dwconv_ukernel_25p8c__rvv);
+            tester.Test(xnn_f32_dwconv_ukernel_25p4c__rvv);
           })),
       [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
         return info.param.test_name;

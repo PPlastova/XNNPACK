@@ -2189,6 +2189,15 @@ BENCHMARK_FP32_END2END(f32_dwconv_25p2c__scalar);
       8 /* channel tile */, 25 /* primary tile */);  
   }
   BENCHMARK_FP32_END2END(f32_dwconv_25p8c__rvv);
+
+    static void f32_dwconv_25p4c__rvv(benchmark::State& state, models::ExecutionPlanFactory model) {
+    DWConvEnd2EndBenchmark(state, model,
+      xnn_f32_dwconv_minmax_ukernel_25p4c__rvv,
+      xnn_f32_dwconv_ukernel_25p4c__rvv,
+      xnn_init_f32_minmax_scalar_params,
+      4 /* channel tile */, 25 /* primary tile */);  
+  }
+  BENCHMARK_FP32_END2END(f32_dwconv_25p4c__rvv);
 #endif  // XNN_ENABLE_RISCV_VECTOR && XNN_ARCH_RISCV
 
 #ifndef XNNPACK_BENCHMARK_NO_MAIN

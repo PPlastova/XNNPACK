@@ -5260,6 +5260,8 @@ SET(ALL_RVV_MICROKERNEL_SRCS
   src/qu8-vmulc/gen/qu8-vmulc-minmax-f32-rvv-u2v.c
   src/f32-dwconv/gen/f32-dwconv-3p4c-minmax-rvv.c
   src/f32-dwconv/gen/f32-dwconv-3p4c-rvv.c
+  src/f32-dwconv/gen/f32-dwconv-25p4c-minmax-rvv.c
+  src/f32-dwconv/gen/f32-dwconv-25p4c-rvv.c
   src/f32-dwconv/gen/f32-dwconv-25p8c-minmax-rvv.c
   src/f32-dwconv/gen/f32-dwconv-25p8c-rvv.c)
 
