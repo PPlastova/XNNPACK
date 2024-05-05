@@ -560,27 +560,49 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 #if XNN_ARCH_RISCV && XNN_ENABLE_RISCV_VECTOR
-  // INSTANTIATE_TEST_SUITE_P(
-  //     F32_DWCONV_3P4C__RVV, DWConvTest,
-  //     testing::ValuesIn(CreateTests1(
-  //         /*c_block=*/4, /*adj_c_block=*/4, /*cr=*/4, /*kr=*/3,
-  //         [](DWConvMicrokernelTester& tester) {
-  //           tester.Test(xnn_f32_dwconv_ukernel_3p4c__rvv);
-  //         })),
-  //     [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
-  //       return info.param.test_name;
-  //     });
+  INSTANTIATE_TEST_SUITE_P(
+      F32_DWCONV_3P4C__RVV, DWConvTest,
+      testing::ValuesIn(CreateTests1(
+          /*c_block=*/4, /*adj_c_block=*/4, /*cr=*/4, /*kr=*/3,
+          [](DWConvMicrokernelTester& tester) {
+            tester.Test(xnn_f32_dwconv_ukernel_3p4c__rvv);
+          })),
+      [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
+        return info.param.test_name;
+      });
 
-  // INSTANTIATE_TEST_SUITE_P(
-  //     F32_DWCONV_25P8C__RVV, DWConvTest,
-  //     testing::ValuesIn(CreateTests1(
-  //         /*c_block=*/8, /*adj_c_block=*/8, /*cr=*/8, /*kr=*/25,
-  //         [](DWConvMicrokernelTester& tester) {
-  //           tester.Test(xnn_f32_dwconv_ukernel_25p8c__rvv);
-  //         })),
-  //     [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
-  //       return info.param.test_name;
-  //     });
+  INSTANTIATE_TEST_SUITE_P(
+      F32_DWCONV_3P8C__RVV, DWConvTest,
+      testing::ValuesIn(CreateTests1(
+          /*c_block=*/8, /*adj_c_block=*/8, /*cr=*/8, /*kr=*/3,
+          [](DWConvMicrokernelTester& tester) {
+            tester.Test(xnn_f32_dwconv_ukernel_3p8c__rvv);
+          })),
+      [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
+        return info.param.test_name;
+      });
+
+  INSTANTIATE_TEST_SUITE_P(
+      F32_DWCONV_9P8C__RVV, DWConvTest,
+      testing::ValuesIn(CreateTests1(
+          /*c_block=*/8, /*adj_c_block=*/8, /*cr=*/8, /*kr=*/9,
+          [](DWConvMicrokernelTester& tester) {
+            tester.Test(xnn_f32_dwconv_ukernel_9p8c__rvv);
+          })),
+      [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
+        return info.param.test_name;
+      });
+
+  INSTANTIATE_TEST_SUITE_P(
+      F32_DWCONV_25P8C__RVV, DWConvTest,
+      testing::ValuesIn(CreateTests1(
+          /*c_block=*/8, /*adj_c_block=*/8, /*cr=*/8, /*kr=*/25,
+          [](DWConvMicrokernelTester& tester) {
+            tester.Test(xnn_f32_dwconv_ukernel_25p8c__rvv);
+          })),
+      [](const testing::TestParamInfo<DWConvTest::ParamType>& info) {
+        return info.param.test_name;
+      });
 
     INSTANTIATE_TEST_SUITE_P(
       F32_DWCONV_25P4C__RVV, DWConvTest,

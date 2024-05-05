@@ -2181,6 +2181,24 @@ BENCHMARK_FP32_END2END(f32_dwconv_25p2c__scalar);
   }
   BENCHMARK_FP32_END2END(f32_dwconv_3p4c__rvv);
 
+  static void f32_dwconv_3p8c__rvv(benchmark::State& state, models::ExecutionPlanFactory model) {
+    DWConvEnd2EndBenchmark(state, model,
+      xnn_f32_dwconv_minmax_ukernel_3p8c__rvv,
+      xnn_f32_dwconv_ukernel_3p8c__rvv,
+      xnn_init_f32_minmax_scalar_params,
+      8 /* channel tile */, 3 /* primary tile */);
+  }
+  BENCHMARK_FP32_END2END(f32_dwconv_3p8c__rvv);
+
+  static void f32_dwconv_9p8c__rvv(benchmark::State& state, models::ExecutionPlanFactory model) {
+    DWConvEnd2EndBenchmark(state, model,
+      xnn_f32_dwconv_minmax_ukernel_9p8c__rvv,
+      xnn_f32_dwconv_ukernel_9p8c__rvv,
+      xnn_init_f32_minmax_scalar_params,
+      8 /* channel tile */, 9 /* primary tile */);  
+  }
+  BENCHMARK_FP32_END2END(f32_dwconv_9p8c__rvv);
+
   static void f32_dwconv_25p8c__rvv(benchmark::State& state, models::ExecutionPlanFactory model) {
     DWConvEnd2EndBenchmark(state, model,
       xnn_f32_dwconv_minmax_ukernel_25p8c__rvv,
