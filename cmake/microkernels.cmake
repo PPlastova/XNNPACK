@@ -5262,6 +5262,10 @@ SET(ALL_RVV_MICROKERNEL_SRCS
   src/f32-dwconv/gen/f32-dwconv-3p4c-rvv.c
   src/f32-dwconv/gen/f32-dwconv-3p8c-minmax-rvv.c
   src/f32-dwconv/gen/f32-dwconv-3p8c-rvv.c
+  src/f32-dwconv/gen/f32-dwconv-4p4c-minmax-rvv.c
+  src/f32-dwconv/gen/f32-dwconv-4p4c-rvv.c
+  src/f32-dwconv/gen/f32-dwconv-9p4c-minmax-rvv.c
+  src/f32-dwconv/gen/f32-dwconv-9p4c-rvv.c
   src/f32-dwconv/gen/f32-dwconv-9p8c-minmax-rvv.c
   src/f32-dwconv/gen/f32-dwconv-9p8c-rvv.c
   src/f32-dwconv/gen/f32-dwconv-25p4c-minmax-rvv.c

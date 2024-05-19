@@ -22,7 +22,7 @@ void xnn_f32_dwconv_minmax_ukernel_3p4c__rvv(
 
   const float vmin = params->scalar.min;
   const float vmax = params->scalar.max;
-
+  size_t vl_max = vsetvlmax_e32m1();
   do {
     const float* i0 = input[0];
     assert(i0 != NULL);
@@ -41,61 +41,43 @@ void xnn_f32_dwconv_minmax_ukernel_3p4c__rvv(
     }
     input = (const float**) ((uintptr_t) input + input_stride);
 
-    size_t c = channels;
     const float* w = weights;
-    for (; c >= 4; c -= 4) {
-      vfloat32m4_t vacc0123p0 = vle32_v_f32m4(w, 4);
+    size_t vl = vl_max;
+    for (size_t c = channels; c != 0; ) {
+      if XNN_UNLIKELY(c < vl_max) {
+        vl = vsetvl_e32m1(c);
+      }
+      vfloat32m1_t vacc0123p0 = vle32_v_f32m1(w, vl);
+      w += vl_max;
+
+      const vfloat32m1_t vi0x0123 = vle32_v_f32m1(i0, vl);
+      i0 += vl;
+
+      const vfloat32m1_t vk0x0123 = vle32_v_f32m1(w, vl);
+      w += vl_max;
+      vacc0123p0 = vfadd_vv_f32m1(vacc0123p0, vfmul_vv_f32m1(vi0x0123, vk0x0123, vl), vl);
+
+      const vfloat32m1_t vi1x0123 = vle32_v_f32m1(i1, vl);
+      i1 += vl;
+
+      const vfloat32m1_t vk1x0123 = vle32_v_f32m1(w, vl);
+      w += vl_max;
+      vacc0123p0 = vfadd_vv_f32m1(vacc0123p0, vfmul_vv_f32m1(vi1x0123, vk1x0123, vl), vl);
+
+      const vfloat32m1_t vi2x0123 = vle32_v_f32m1(i2, vl);
+      i2 += vl;
+
+      const vfloat32m1_t vk2x0123 = vle32_v_f32m1(w, vl);
+      w += vl_max;
+      vacc0123p0 = vfadd_vv_f32m1(vacc0123p0, vfmul_vv_f32m1(vi2x0123, vk2x0123, vl), vl);
+
       
-      const vfloat32m4_t vi0x0123 = vle32_v_f32m4(i0, 4);
-      i0 += 4;
-      const vfloat32m4_t vk0x0123 = vle32_v_f32m4(w + 4, 4);
-      vacc0123p0 = vfadd_vv_f32m4(vacc0123p0, vfmul_vv_f32m4(vi0x0123, vk0x0123, 4), 4);
+      vfloat32m1_t vacc0123 = vfmax_vf_f32m1(vacc0123p0, vmin, vl);
+      vacc0123 = vfmin_vf_f32m1(vacc0123, vmax, vl);
 
-      const vfloat32m4_t vi1x0123 = vle32_v_f32m4(i1, 4);
-      i1 += 4;
-      const vfloat32m4_t vk1x0123 = vle32_v_f32m4(w + 8, 4);
-      vacc0123p0 = vfadd_vv_f32m4(vacc0123p0, vfmul_vv_f32m4(vi1x0123, vk1x0123, 4), 4);
-
-      const vfloat32m4_t vi2x0123 = vle32_v_f32m4(i2, 4);
-      i2 += 4;
-      const vfloat32m4_t vk2x0123 = vle32_v_f32m4(w + 12, 4);
-      vacc0123p0 = vfadd_vv_f32m4(vacc0123p0, vfmul_vv_f32m4(vi2x0123, vk2x0123, 4), 4);
-      w += 16;
-
-      vfloat32m4_t vacc0123 = vfmax_vf_f32m4(vacc0123p0,vmin, 4);
-      vacc0123 = vfmin_vf_f32m4( vacc0123, vmax,4);
-
-      vse32_v_f32m4(output, vacc0123, 4);
-      output += 4;
-    }
-
-    if XNN_UNLIKELY(c != 0) {
-      vfloat32m4_t vacc0123p0 = vle32_v_f32m4(w, 4);
-
-      const vfloat32m4_t vi0x0123 = vle32_v_f32m4(i0, 4);
-      const vfloat32m4_t vk0x0123 = vle32_v_f32m4(w + 4, 4);
-      vacc0123p0 = vfmacc_vv_f32m4(vacc0123p0, vi0x0123, vk0x0123, 4);
-
-      const vfloat32m4_t vi1x0123 = vle32_v_f32m4(i1, 4);
-      const vfloat32m4_t vk1x0123 = vle32_v_f32m4(w + 8, 4);
-      vacc0123p0 = vfmacc_vv_f32m4(vacc0123p0, vi1x0123, vk1x0123, 4);
-
-      const vfloat32m4_t vi2x0123 = vle32_v_f32m4(i2, 4);
-      const vfloat32m4_t vk2x0123 = vle32_v_f32m4(w + 12, 4);
-      vacc0123p0 = vfmacc_vv_f32m4(vacc0123p0, vi2x0123, vk2x0123, 4);
-
-      vfloat32m4_t vacc0123 = vfmax_vf_f32m4(vacc0123p0, vmin, 4);
-      vacc0123 = vfmin_vf_f32m4(vacc0123, vmax, 4);
-
-      if (c & 2) {
-        vse32_v_f32m4(output, vacc0123, 2);
-        output += 2;
-        vacc0123 = vrgather_vx_f32m4(vacc0123, 2, 1);
-      }
-      if (c & 1) {
-        vse32_v_f32m4(output, vacc0123, 1);
-        output += 1;
-      }
+      vse32_v_f32m1(output, vacc0123, vl);
+      output += vl;
+      c -= vl;
     }
 
     output = (float*) ((uintptr_t) output + output_increment);

@@ -4,7 +4,8 @@
 
 #include <xnnpack/dwconv.h>
 
-void xnn_f32_dwconv_ukernel_3p4c__rvv(
+
+void xnn_f32_dwconv_minmax_ukernel_4p4c__rvv(
     size_t channels,
     size_t output_width,
     const float** input,
@@ -14,13 +15,14 @@ void xnn_f32_dwconv_ukernel_3p4c__rvv(
     size_t output_increment,
     size_t input_offset,
     const float* zero,
-    const union xnn_f32_default_params params[restrict XNN_MIN_ELEMENTS(1)])
+    const union xnn_f32_minmax_params params[restrict XNN_MIN_ELEMENTS(1)]) XNN_OOB_READS
 {
   assert(channels != 0);
   assert(output_width != 0);
-  
-  size_t vl_max = vsetvlmax_e32m1();
 
+  const float vmin = params->scalar.min;
+  const float vmax = params->scalar.max;
+  size_t vl_max = vsetvlmax_e32m1();
   do {
     const float* i0 = input[0];
     assert(i0 != NULL);
@@ -37,9 +39,15 @@ void xnn_f32_dwconv_ukernel_3p4c__rvv(
     if XNN_UNPREDICTABLE(i2 != zero) {
       i2 = (const float*) ((uintptr_t) i2 + input_offset);
     }
+    const float* i3 = input[3];
+    assert(i3 != NULL);
+    if XNN_UNPREDICTABLE(i3 != zero) {
+      i3 = (const float*) ((uintptr_t) i3 + input_offset);
+    }
     input = (const float**) ((uintptr_t) input + input_stride);
 
     const float* w = weights;
+
     size_t vl = vl_max;
     for (size_t c = channels; c != 0; ) {
       if XNN_UNLIKELY(c < vl_max) {
@@ -69,7 +77,15 @@ void xnn_f32_dwconv_ukernel_3p4c__rvv(
       w += vl_max;
       vacc0123p0 = vfadd_vv_f32m1(vacc0123p0, vfmul_vv_f32m1(vi2x0123, vk2x0123, vl), vl);
 
-      vfloat32m1_t vacc0123 = vacc0123p0;
+      const vfloat32m1_t vi3x0123 = vle32_v_f32m1(i3, vl);
+      i3 += vl;
+
+      const vfloat32m1_t vk3x0123 = vle32_v_f32m1(w, vl);
+      w += vl_max;
+      vacc0123p0 = vfadd_vv_f32m1(vacc0123p0, vfmul_vv_f32m1(vi3x0123, vk3x0123, vl), vl);
+
+      vfloat32m1_t vacc0123 = vfmax_vf_f32m1(vacc0123p0, vmin, vl);
+      vacc0123 = vfmin_vf_f32m1(vacc0123, vmax, vl);
 
       vse32_v_f32m1(output, vacc0123, vl);
       output += vl;

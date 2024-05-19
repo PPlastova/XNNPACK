@@ -4,7 +4,8 @@
 
 #include <xnnpack/dwconv.h>
 
-void xnn_f32_dwconv_ukernel_3p4c__rvv(
+
+void xnn_f32_dwconv_ukernel_4p4c__rvv(
     size_t channels,
     size_t output_width,
     const float** input,
@@ -14,13 +15,12 @@ void xnn_f32_dwconv_ukernel_3p4c__rvv(
     size_t output_increment,
     size_t input_offset,
     const float* zero,
-    const union xnn_f32_default_params params[restrict XNN_MIN_ELEMENTS(1)])
+    const union xnn_f32_default_params params[restrict XNN_MIN_ELEMENTS(1)]) XNN_OOB_READS
 {
   assert(channels != 0);
   assert(output_width != 0);
-  
-  size_t vl_max = vsetvlmax_e32m1();
 
+  size_t vl_max = vsetvlmax_e32m1();
   do {
     const float* i0 = input[0];
     assert(i0 != NULL);
@@ -36,6 +36,11 @@ void xnn_f32_dwconv_ukernel_3p4c__rvv(
     assert(i2 != NULL);
     if XNN_UNPREDICTABLE(i2 != zero) {
       i2 = (const float*) ((uintptr_t) i2 + input_offset);
+    }
+    const float* i3 = input[3];
+    assert(i3 != NULL);
+    if XNN_UNPREDICTABLE(i3 != zero) {
+      i3 = (const float*) ((uintptr_t) i3 + input_offset);
     }
     input = (const float**) ((uintptr_t) input + input_stride);
 
@@ -68,6 +73,13 @@ void xnn_f32_dwconv_ukernel_3p4c__rvv(
       const vfloat32m1_t vk2x0123 = vle32_v_f32m1(w, vl);
       w += vl_max;
       vacc0123p0 = vfadd_vv_f32m1(vacc0123p0, vfmul_vv_f32m1(vi2x0123, vk2x0123, vl), vl);
+
+      const vfloat32m1_t vi3x0123 = vle32_v_f32m1(i3, vl);
+      i3 += vl;
+
+      const vfloat32m1_t vk3x0123 = vle32_v_f32m1(w, vl);
+      w += vl_max;
+      vacc0123p0 = vfadd_vv_f32m1(vacc0123p0, vfmul_vv_f32m1(vi3x0123, vk3x0123, vl), vl);
 
       vfloat32m1_t vacc0123 = vacc0123p0;
 

@@ -1796,6 +1796,38 @@ BENCHMARK_DWCONV(f32_dwconv_6f6m7l1c1s1r__scalar_acc2)
 BENCHMARK_DWCONV(f32_dwconv_8f8m9l1c1s1r__scalar)
 BENCHMARK_DWCONV(f32_dwconv_8f8m9l1c1s1r__scalar_acc2)
 
+#if XNN_ENABLE_RISCV_VECTOR && XNN_ARCH_RISCV
+static void f32_dwconv_9p4c__rvv(benchmark::State& state, const char* net) {
+  f32_dwconv(state,
+              xnn_f32_dwconv_minmax_ukernel_9p4c__rvv,
+              xnn_init_f32_minmax_scalar_params,
+              4 /* channel tile */, 9 /* primary tile */);
+}
+
+static void f32_dwconv_9p8c__rvv(benchmark::State& state, const char* net) {
+  f32_dwconv(state,
+              xnn_f32_dwconv_minmax_ukernel_9p8c__rvv,
+              xnn_init_f32_minmax_scalar_params,
+              8 /* channel tile */, 9 /* primary tile */);
+}
+
+static void f32_dwconv_25p4c__rvv(benchmark::State& state, const char* net) {
+  f32_dwconv(state,
+              xnn_f32_dwconv_minmax_ukernel_25p4c__rvv,
+              xnn_init_f32_minmax_scalar_params,
+              4 /* channel tile */, 25 /* primary tile */);
+}
+static void f32_dwconv_25p8c__rvv(benchmark::State& state, const char* net) {
+  f32_dwconv(state,
+              xnn_f32_dwconv_minmax_ukernel_25p8c__rvv,
+              xnn_init_f32_minmax_scalar_params,
+              8 /* channel tile */, 25 /* primary tile */);
+}
+BENCHMARK_DWCONV(f32_dwconv_9p4c__rvv)
+BENCHMARK_DWCONV(f32_dwconv_25p4c__rvv)
+BENCHMARK_DWCONV(f32_dwconv_25p8c__rvv)
+#endif  // XNN_ENABLE_RISCV_VECTOR && XNN_ARCH_RISCV
+
 #ifndef XNNPACK_BENCHMARK_NO_MAIN
 BENCHMARK_MAIN();
 #endif

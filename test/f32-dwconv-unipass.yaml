@@ -43,6 +43,8 @@
 #RISCV RVV
 - name: xnn_f32_dwconv_ukernel_3p4c__rvv
 - name: xnn_f32_dwconv_ukernel_3p8c__rvv
+- name: xnn_f32_dwconv_ukernel_4p4c__rvv
 - name: xnn_f32_dwconv_ukernel_9p8c__rvv
+- name: xnn_f32_dwconv_ukernel_9p4c__rvv
 - name: xnn_f32_dwconv_ukernel_25p8c__rvv
 - name: xnn_f32_dwconv_ukernel_25p4c__rvv
